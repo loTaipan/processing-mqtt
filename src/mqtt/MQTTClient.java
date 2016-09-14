@@ -162,12 +162,25 @@ public class MQTTClient implements MqttCallback {
   /**
    * Connect to a broker using an broker URI, client Id and cleanSession flag.
    *
-   * @example PublishSubscribe
    * @param brokerURI
-   * @param clientId
+   * @param clientID
    * @param cleanSession
    */
-  public void connect(String brokerURI, String clientId, boolean cleanSession) {
+  public void connect(String brokerURI, String clientID, boolean cleanSession) {
+    connect(brokerURI, clientID, true, "", "");
+  }
+  
+  /**
+   * Connect to a broker using an broker URI, client Id and cleanSession flag.
+   *
+   * @example PublishSubscribe
+   * @param brokerURI
+   * @param clientID
+   * @param cleanSession
+   * @param user
+   * @param password
+   */
+  public void connect(String brokerURI, String clientID, boolean cleanSession, String user, String password) {
     URI uri = null;
     try {
       uri = new URI(brokerURI);
@@ -195,11 +208,15 @@ public class MQTTClient implements MqttCallback {
           }
         }
       }
+	  else {
+		options.setUserName( user );
+		options.setPassword( password.toCharArray() );
+	  }
 
       if (uri.getPort()!=-1){
-        client = new MqttClient("tcp://" + uri.getHost() + ":" + uri.getPort(), clientId, new MemoryPersistence());
+        client = new MqttClient("tcp://" + uri.getHost() + ":" + uri.getPort(), clientID, new MemoryPersistence());
       } else {
-        client = new MqttClient("tcp://" + uri.getHost(), clientId, new MemoryPersistence());
+        client = new MqttClient("tcp://" + uri.getHost(), clientID, new MemoryPersistence());
       }
 
       client.setCallback(this);
